@@ -3,20 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FIFA World Cup 2026 StadiumAI — GenAI stadium operations platform
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: ai
+    description: AI module endpoints
+  - name: incidents
+    description: Incident management
+  - name: venues
+    description: Stadium venues
+  - name: dashboard
+    description: Dashboard analytics
+  - name: conversations
+    description: AI conversation history
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,393 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /ai/ask:
+    post:
+      operationId: askAI
+      tags: [ai]
+      summary: Ask an AI module a question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiQuery"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /ai/incident-triage:
+    post:
+      operationId: triageIncident
+      tags: [ai]
+      summary: AI-powered incident triage and classification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentTriageInput"
+      responses:
+        "200":
+          description: Triage result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentTriageResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /ai/crowd-analysis:
+    post:
+      operationId: analyzeCrowd
+      tags: [ai]
+      summary: AI crowd density analysis and recommendations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrowdInput"
+      responses:
+        "200":
+          description: Crowd analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrowdAnalysis"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /ai/translate:
+    post:
+      operationId: translateText
+      tags: [ai]
+      summary: Multilingual AI translation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslationInput"
+      responses:
+        "200":
+          description: Translation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslationResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /incidents:
+    get:
+      operationId: listIncidents
+      tags: [incidents]
+      summary: List all incidents
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+        - name: module
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Incident"
+    post:
+      operationId: createIncident
+      tags: [incidents]
+      summary: Create a new incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentInput"
+      responses:
+        "201":
+          description: Created incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /incidents/{id}:
+    patch:
+      operationId: updateIncident
+      tags: [incidents]
+      summary: Update an incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentUpdate"
+      responses:
+        "200":
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteIncident
+      tags: [incidents]
+      summary: Delete an incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /venues:
+    get:
+      operationId: listVenues
+      tags: [venues]
+      summary: List all venues
+      responses:
+        "200":
+          description: List of venues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Venue"
+
+  /venues/{id}:
+    get:
+      operationId: getVenue
+      tags: [venues]
+      summary: Get a venue by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Venue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Venue"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard summary statistics
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [conversations]
+      summary: List all AI conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [conversations]
+      summary: Create a new AI conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [conversations]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationWithMessages"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteConversation
+      tags: [conversations]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /conversations/{id}/messages:
+    get:
+      operationId: listMessages
+      tags: [conversations]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [conversations]
+      summary: Send a message and get AI response
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "200":
+          description: AI response message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +430,342 @@ components:
       required:
         - status
 
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    # AI Module Schemas
+    AiQuery:
+      type: object
+      properties:
+        module:
+          type: string
+        query:
+          type: string
+        context:
+          type: ["string", "null"]
+        language:
+          type: ["string", "null"]
+      required:
+        - module
+        - query
+
+    AiResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        suggestions:
+          type: array
+          items:
+            type: string
+        module:
+          type: string
+      required:
+        - answer
+        - module
+
+    IncidentTriageInput:
+      type: object
+      properties:
+        description:
+          type: string
+        location:
+          type: string
+        reportedBy:
+          type: ["string", "null"]
+      required:
+        - description
+        - location
+
+    IncidentTriageResult:
+      type: object
+      properties:
+        priority:
+          type: string
+        category:
+          type: string
+        suggestedActions:
+          type: array
+          items:
+            type: string
+        estimatedResolutionTime:
+          type: string
+      required:
+        - priority
+        - category
+        - suggestedActions
+        - estimatedResolutionTime
+
+    CrowdInput:
+      type: object
+      properties:
+        venue:
+          type: string
+        zone:
+          type: string
+        density:
+          type: number
+        matchPhase:
+          type: ["string", "null"]
+      required:
+        - venue
+        - zone
+        - density
+
+    CrowdAnalysis:
+      type: object
+      properties:
+        riskLevel:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        alertMessage:
+          type: ["string", "null"]
+      required:
+        - riskLevel
+        - recommendations
+
+    TranslationInput:
+      type: object
+      properties:
+        text:
+          type: string
+        targetLanguage:
+          type: string
+        sourceLanguage:
+          type: ["string", "null"]
+      required:
+        - text
+        - targetLanguage
+
+    TranslationResult:
+      type: object
+      properties:
+        translatedText:
+          type: string
+        detectedLanguage:
+          type: ["string", "null"]
+      required:
+        - translatedText
+
+    # Incident Schemas
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        priority:
+          type: string
+        status:
+          type: string
+        module:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - location
+        - priority
+        - status
+        - module
+        - createdAt
+        - updatedAt
+
+    IncidentInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        priority:
+          type: string
+        module:
+          type: string
+      required:
+        - title
+        - description
+        - location
+        - priority
+        - module
+
+    IncidentUpdate:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        priority:
+          type: ["string", "null"]
+        status:
+          type: ["string", "null"]
+
+    # Venue Schemas
+    Venue:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        capacity:
+          type: integer
+        currentOccupancy:
+          type: integer
+        crowdDensity:
+          type: number
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - city
+        - country
+        - capacity
+        - currentOccupancy
+        - crowdDensity
+        - status
+        - createdAt
+
+    # Dashboard Schemas
+    DashboardStats:
+      type: object
+      properties:
+        totalIncidents:
+          type: integer
+        openIncidents:
+          type: integer
+        criticalIncidents:
+          type: integer
+        resolvedToday:
+          type: integer
+        crowdCapacityPercent:
+          type: number
+        activeVenues:
+          type: integer
+        volunteerCount:
+          type: integer
+        carbonSavedKg:
+          type: number
+      required:
+        - totalIncidents
+        - openIncidents
+        - criticalIncidents
+        - resolvedToday
+        - crowdCapacityPercent
+        - activeVenues
+        - volunteerCount
+        - carbonSavedKg
+
+    # Conversation Schemas
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        module:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - module
+        - createdAt
+
+    ConversationInput:
+      type: object
+      properties:
+        title:
+          type: string
+        module:
+          type: string
+      required:
+        - title
+        - module
+
+    ConversationWithMessages:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        module:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+      required:
+        - id
+        - title
+        - module
+        - createdAt
+        - messages
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+
+    MessageInput:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
