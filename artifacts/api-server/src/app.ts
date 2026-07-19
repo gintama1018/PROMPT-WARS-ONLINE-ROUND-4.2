@@ -63,6 +63,17 @@ app.use(
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
+// ─── Root & Favicon Handlers ──────────────────────────────────────────────────
+app.get("/", (_req, res) => {
+  res.json({ status: "ok", message: "StadiumAI API Server" });
+});
+app.get("/favicon.ico", (_req, res) => {
+  res.status(204).end();
+});
+app.get("/favicon.png", (_req, res) => {
+  res.status(204).end();
+});
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", router);
 
