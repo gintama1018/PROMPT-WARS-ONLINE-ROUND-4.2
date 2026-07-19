@@ -1,11 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
 import { logger } from "./logger.js";
 
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY environment variable is required");
-}
+let aiClient: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+function getAiClient(): GoogleGenAI {
+  if (!aiClient) {
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY environment variable is required");
+    }
+    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  return aiClient;
+}
 
 const MODEL = "gemini-2.5-flash";
 
@@ -25,7 +31,7 @@ export async function generateContent(
   const { systemInstruction, maxOutputTokens = 8192, temperature } = options;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAiClient().models.generateContent({
       model: MODEL,
       contents: [{ role: "user", parts: [{ text: userPrompt }] }],
       config: {
@@ -51,7 +57,7 @@ export async function generateFromHistory(
   const { systemInstruction, maxOutputTokens = 8192 } = options;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAiClient().models.generateContent({
       model: MODEL,
       contents: messages.map((m) => ({
         role: m.role,
