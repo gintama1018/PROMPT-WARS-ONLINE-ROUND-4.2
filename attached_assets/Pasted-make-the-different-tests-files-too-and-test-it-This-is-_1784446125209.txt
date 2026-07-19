@@ -1,0 +1,24 @@
+make the different tests files too, and test it , This is a lot of real feature work — the breadth across all 8 modules is genuinely good Problem Alignment coverage, and things like the SOS button, per-incident AI triage, and role-aware prompting show you understood the ops-side use case, not just the fan-facing chatbot. But I want to flag something important: **two of the three issues I raised last time are still unresolved in this summary**, and they're both High/Medium impact criteria. Let me be specific rather than just say "good job."
+
+## Still unresolved — and these matter most
+
+**1. The API key/security issue is still exactly as before.**
+> "Paste your Google Gemini API key... stored only in sessionStorage"
+
+This is the same client-side-only architecture I flagged. sessionStorage vs localStorage doesn't fix the core problem: the key is still sent from the browser directly to Google's API, visible in the Network tab, with zero server-side validation, no real rate limiting (a "disable button while loading" is UX, not a security control), and no output guardrails. Under the **Security** criterion, a grader is likely to specifically check "is there a backend mediating third-party API access," and right now the honest answer is no. This is the one thing I'd fix before anything else — even a 40-line proxy server changes the answer from "no" to "yes."
+
+**2. "Testability" is claimed but not demonstrated.**
+Your table says:
+> Testability | Modular IIFE pattern; each module independently testable
+
+"Independently testable" and "has tests" are different things. There's no test file, no test runner (Jest/Vitest), no CI config, no coverage number anywhere in this build. A rubric item literally titled "Testability & Maintainability" will almost certainly be graded by looking for actual test artifacts — `*.test.js`, a `package.json` with a test script, a CI workflow file — not by reading a claim in a README. Right now if a grader opens the repo looking for tests, they find none. That's a real gap against a High/Medium-weighted item, not a nitpick.
+
+**3. One 73KB `app.js` file is a code-quality red flag regardless of internal structure.**
+IIFEs inside a single file can still be well-organized, but "single responsibility per module" is hard to credit when every module lives in one 73KB file. Native ES modules (`<script type="module">`, separate files: `chat.js`, `navigation.js`, `accessibility.js`, `transport.js`, `ops.js`, `sustainability.js`, `volunteers.js`, `api.js`, `state.js`) cost you almost nothing architecturally — you're still zero-build, still double-click-to-open — but they make the file structure itself demonstrate separation of concerns instead of asking the grader to trust a comment.
+
+## What I'd do with the time you have left, in priority order
+
+1. **Minimal backend proxy** (even a single Node/Express or Python file) that holds the Gemini key server-side, forwards requests, and does basic input validation + a real rate limiter (e.g. `express-rate-limit`). This single change fixes your biggest Security gap and is maybe an hour of work.
+2. **Split `app.js` into real ES modules**, one per panel + `api.js` + `state.js`. Mechanical refactor, low risk, directly improves Code Quality and Maintainability signals.
+3. **Add a small real test suite** — even 15-20 unit tests total, targeted at pure-logic functions that don't touch the DOM: prompt builders, the carbon-footprint calculator, incident-priority classification logic, crowd-density-to-color mapping, route-scoring. Pair with a `package.json` test script and a one-file GitHub Actions workflow (`npm test` on push). This is the highest ROI per hour of any remaining task, because right now this criterion is scoring close to zero on demonstrated evidence.
+4. **Palette check** — confirm you actually moved off gold/neon-cyan, since it wasn't mentioned in this summary. If it's still in the CSS, swap gold → muted bronze/champagne and neon-cyan → a desaturated steel-blue.
