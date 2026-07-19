@@ -74,8 +74,6 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
-  - '@google/genai'
-  - 'protobufjs'
 
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms
