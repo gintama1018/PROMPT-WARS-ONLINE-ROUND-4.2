@@ -6,7 +6,7 @@ import {
   getCarbonTierLabel,
   suggestGreenerAlternatives,
   calculateCollectiveSavings,
-} from "../lib/carbon-calculator";
+} from "../artifacts/api-server/src/lib/carbon-calculator";
 
 describe("calculateTransportEmissions", () => {
   it("returns 0 for walking", () => {

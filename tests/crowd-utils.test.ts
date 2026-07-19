@@ -6,7 +6,7 @@ import {
   routeScore,
   estimateDispersalTime,
   getCrowdRecommendations,
-} from "../lib/crowd-utils";
+} from "../artifacts/api-server/src/lib/crowd-utils";
 
 describe("crowdDensityToRiskLevel", () => {
   it("returns 'low' for density below 40%", () => {
@@ -99,7 +99,7 @@ describe("routeScore", () => {
     expect(score).toBeLessThanOrEqual(100);
   });
 
-  it("shorter routes score higher than longer routes (same crowd)", () => {
+  it("shortest routes score higher than longer routes (same crowd)", () => {
     const short = routeScore({ distanceMeters: 100, crowdDensity: 30, isAccessible: false });
     const long = routeScore({ distanceMeters: 800, crowdDensity: 30, isAccessible: false });
     expect(short).toBeGreaterThan(long);

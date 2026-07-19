@@ -28,7 +28,7 @@ export default function FanPortal() {
   
   const { data: activeConversation } = useGetConversation(
     activeConversationId as number, 
-    { query: { enabled: !!activeConversationId } }
+    { query: { enabled: !!activeConversationId } as any }
   );
 
   const { handleStartChat, handleSendMessage, isAsking } = useChatFlow();

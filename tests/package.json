@@ -1,0 +1,16 @@
+{
+  "name": "@workspace/tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@workspace/api-server": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.0",
+    "typescript": "~5.9.3"
+  }
+}

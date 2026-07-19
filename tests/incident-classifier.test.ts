@@ -4,7 +4,7 @@ import {
   classifyIncidentCategory,
   getSuggestedActions,
   estimateResolutionTime,
-} from "../lib/incident-classifier";
+} from "../artifacts/api-server/src/lib/incident-classifier";
 
 describe("classifyIncidentPriority", () => {
   it("returns 'critical' for cardiac arrest", () => {

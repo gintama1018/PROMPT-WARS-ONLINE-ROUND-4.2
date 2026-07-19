@@ -6,7 +6,7 @@ import {
   buildTranslationPrompt,
   buildFanPrompt,
   buildModuleSystemInstruction,
-} from "../lib/ai-prompts";
+} from "../artifacts/api-server/src/lib/ai-prompts";
 
 describe("buildNavigationPrompt", () => {
   it("includes destination in user prompt", () => {
