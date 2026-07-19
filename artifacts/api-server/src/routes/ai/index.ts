@@ -6,20 +6,20 @@ import {
   AnalyzeCrowdBody,
   TranslateTextBody,
 } from "@workspace/api-zod";
-import { generateContent, parseJsonResponse } from "../../lib/ai-client";
+import { generateContent, parseJsonResponse } from "../../lib/ai-client.js";
 import {
   buildFanPrompt,
   buildIncidentTriagePrompt,
   buildCrowdAnalysisPrompt,
   buildTranslationPrompt,
-} from "../../lib/ai-prompts";
+} from "../../lib/ai-prompts.js";
 import {
   classifyIncidentPriority,
   classifyIncidentCategory,
   getSuggestedActions,
   estimateResolutionTime,
-} from "../../lib/incident-classifier";
-import { crowdDensityToRiskLevel, getCrowdRecommendations } from "../../lib/crowd-utils";
+} from "../../lib/incident-classifier.js";
+import { crowdDensityToRiskLevel, getCrowdRecommendations } from "../../lib/crowd-utils.js";
 
 const router: IRouter = Router();
 

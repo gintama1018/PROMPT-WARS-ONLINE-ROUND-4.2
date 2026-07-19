@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { logger } from "./logger";
+import { logger } from "./logger.js";
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEY environment variable is required");

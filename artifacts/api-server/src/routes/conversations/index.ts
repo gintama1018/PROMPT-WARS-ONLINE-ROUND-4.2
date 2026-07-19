@@ -9,8 +9,8 @@ import {
   SendMessageParams,
   SendMessageBody,
 } from "@workspace/api-zod";
-import { generateFromHistory } from "../../lib/ai-client";
-import { buildModuleSystemInstruction } from "../../lib/ai-prompts";
+import { generateFromHistory } from "../../lib/ai-client.js";
+import { buildModuleSystemInstruction } from "../../lib/ai-prompts.js";
 
 const router: IRouter = Router();
 
