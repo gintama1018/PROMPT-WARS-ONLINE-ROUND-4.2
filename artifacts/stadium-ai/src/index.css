@@ -135,3 +135,26 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/*
+ * Reduced Motion
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Users who set "Reduce motion" in their OS preferences (vestibular disorders,
+ * epilepsy, or simply preference) get this block. It disables:
+ *   - animate-pulse   → the typing indicator dots and skeleton loaders
+ *   - animate-in      → the fade-in / zoom-in on the crowd analysis result
+ *   - all transitions → hover state colour flips on nav, cards, and buttons
+ *
+ * This has zero impact on the visual design for users who have NOT opted in —
+ * it only fires when the OS media query is active.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

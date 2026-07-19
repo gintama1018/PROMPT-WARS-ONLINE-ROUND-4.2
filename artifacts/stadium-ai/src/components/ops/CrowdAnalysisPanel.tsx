@@ -59,21 +59,28 @@ function AnalysisResult({ result }: AnalysisResultProps) {
         <Badge
           variant="outline"
           className={cn("uppercase text-[10px]", getCrowdRiskColor(result.riskLevel))}
+          aria-label={`Risk level: ${result.riskLevel}`}
         >
           {result.riskLevel} RISK
         </Badge>
       </div>
 
+      {/*
+       * role="alert" triggers an immediate announcement by screen readers —
+       * appropriate here because a critical crowd alert demands urgent attention,
+       * exactly like a visual "red text warning" does for sighted users.
+       */}
       {result.alertMessage && (
-        <p className="text-sm font-medium mb-3 text-red-300">
+        <p role="alert" className="text-sm font-medium mb-3 text-red-300">
           {result.alertMessage}
         </p>
       )}
 
-      <ul className="text-sm space-y-2 text-slate-300 dark:text-muted-foreground">
+      <ul className="text-sm space-y-2 text-slate-300 dark:text-muted-foreground" aria-label="Recommendations">
         {result.recommendations.map((rec, index) => (
           <li key={index} className="flex gap-2 items-start">
-            <div className="w-1 h-1 rounded-full bg-slate-500 mt-2 shrink-0" />
+            {/* Purely decorative visual bullet — hidden from the a11y tree */}
+            <div className="w-1 h-1 rounded-full bg-slate-500 mt-2 shrink-0" aria-hidden="true" />
             <span>{rec}</span>
           </li>
         ))}
@@ -119,7 +126,7 @@ export function CrowdAnalysisPanel({ venues }: { venues: Venue[] }) {
     <Card className="flex flex-col bg-slate-900 text-slate-50 border-slate-800 dark:bg-card dark:text-card-foreground dark:border-border">
       <CardHeader className="border-b border-slate-800 dark:border-border pb-4">
         <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5" />
+          <Activity className="h-5 w-5" aria-hidden="true" />
           AI Crowd Analysis
         </CardTitle>
         <CardDescription className="text-slate-400 dark:text-muted-foreground">
@@ -128,14 +135,29 @@ export function CrowdAnalysisPanel({ venues }: { venues: Venue[] }) {
       </CardHeader>
 
       <CardContent className="p-6 space-y-4">
+        {/*
+         * Label–control association via htmlFor / id on every form control.
+         * Without this, screen readers announce the input field name only if
+         * the user is lucky enough to be using a browser that guesses it from
+         * adjacent text — which is not reliable and fails automated a11y audits.
+         *
+         * For Shadcn <Select>, the id goes on <SelectTrigger> (the rendered button)
+         * so that htmlFor on <Label> creates a valid programmatic association.
+         */}
+
         {/* Venue selector */}
         <div className="space-y-2">
-          <Label className="text-slate-300 dark:text-muted-foreground">Venue</Label>
+          <Label htmlFor="venue-select" className="text-slate-300 dark:text-muted-foreground">
+            Venue
+          </Label>
           <Select
             value={crowdInput.venue}
             onValueChange={(v) => setField("venue", v)}
           >
-            <SelectTrigger className="bg-slate-800/50 border-slate-700 dark:bg-background dark:border-input">
+            <SelectTrigger
+              id="venue-select"
+              className="bg-slate-800/50 border-slate-700 dark:bg-background dark:border-input"
+            >
               <SelectValue placeholder="Select venue..." />
             </SelectTrigger>
             <SelectContent>
@@ -150,8 +172,11 @@ export function CrowdAnalysisPanel({ venues }: { venues: Venue[] }) {
 
         {/* Zone input */}
         <div className="space-y-2">
-          <Label className="text-slate-300 dark:text-muted-foreground">Zone</Label>
+          <Label htmlFor="zone-input" className="text-slate-300 dark:text-muted-foreground">
+            Zone
+          </Label>
           <Input
+            id="zone-input"
             value={crowdInput.zone}
             onChange={(e) => setField("zone", e.target.value)}
             placeholder="e.g. North Gate Entrance"
@@ -161,11 +186,12 @@ export function CrowdAnalysisPanel({ venues }: { venues: Venue[] }) {
 
         {/* Density input + analyze button */}
         <div className="space-y-2">
-          <Label className="text-slate-300 dark:text-muted-foreground">
+          <Label htmlFor="density-input" className="text-slate-300 dark:text-muted-foreground">
             Simulated Density (%)
           </Label>
           <div className="flex gap-4 items-center">
             <Input
+              id="density-input"
               type="number"
               min="0"
               max="100"
@@ -177,14 +203,23 @@ export function CrowdAnalysisPanel({ venues }: { venues: Venue[] }) {
               onClick={handleAnalyze}
               disabled={analyzeCrowd.isPending}
               variant="secondary"
+              aria-busy={analyzeCrowd.isPending}
             >
-              {analyzeCrowd.isPending ? "Analyzing..." : "Analyze"}
+              {analyzeCrowd.isPending ? "Analyzing…" : "Analyze"}
             </Button>
           </div>
         </div>
 
-        {/* Analysis result — only rendered after a successful call */}
-        {analysisResult && <AnalysisResult result={analysisResult} />}
+        {/*
+         * aria-live="polite" on the wrapper notifies screen readers when the
+         * analysis result appears after the async call completes — without it,
+         * the new content is silently inserted into the DOM with no announcement.
+         * "polite" waits for the user to finish their current action before reading.
+         * aria-atomic="true" ensures the full result block is read as a unit.
+         */}
+        <div aria-live="polite" aria-atomic="true">
+          {analysisResult && <AnalysisResult result={analysisResult} />}
+        </div>
       </CardContent>
     </Card>
   );

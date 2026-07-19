@@ -39,6 +39,12 @@ interface ReportIncidentModalProps {
  * needs to know when the modal opens/closes and handle the final submit.
  * Includes an "Auto-Triage with AI" action that calls the triage endpoint
  * and pre-fills the priority field with the AI's recommendation.
+ *
+ * A11y notes:
+ * - Shadcn <Dialog> handles role="dialog", aria-modal="true", and focus trapping.
+ * - Every <Label> has htmlFor pointing to its control's id — critical for
+ *   <Select> controls where the label is not adjacent to the interactive element.
+ * - aria-live="polite" on the triage result region announces the auto-fill.
  */
 export function ReportIncidentModal({
   isOpen,
@@ -122,13 +128,18 @@ export function ReportIncidentModal({
           </div>
 
           <div className="flex gap-4">
+            {/*
+             * htmlFor on Label must match the id on SelectTrigger (the rendered
+             * <button>). Without this pairing, screen readers do not associate the
+             * label text "Module" or "Priority" with the select control.
+             */}
             <div className="space-y-2 flex-1">
-              <Label>Module</Label>
+              <Label htmlFor="incident-module">Module</Label>
               <Select
                 value={form.module}
                 onValueChange={(v) => setField("module", v)}
               >
-                <SelectTrigger>
+                <SelectTrigger id="incident-module">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,12 +153,25 @@ export function ReportIncidentModal({
             </div>
 
             <div className="space-y-2 flex-1">
-              <Label>Priority</Label>
+              {/*
+               * aria-live region: when Auto-Triage fires and the priority value changes,
+               * this sr-only span announces "Priority updated to: critical" — giving
+               * keyboard-only and screen reader users the same feedback sighted users
+               * get from watching the dropdown value change.
+               */}
+              <Label htmlFor="incident-priority">
+                Priority
+                <span className="sr-only" aria-live="polite">
+                  {triageIncident.isSuccess
+                    ? ` — updated to: ${form.priority}`
+                    : ""}
+                </span>
+              </Label>
               <Select
                 value={form.priority}
                 onValueChange={(v) => setField("priority", v)}
               >
-                <SelectTrigger>
+                <SelectTrigger id="incident-priority">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -167,11 +191,16 @@ export function ReportIncidentModal({
             variant="secondary"
             onClick={handleAutoTriage}
             disabled={isTriageDisabled}
+            aria-busy={triageIncident.isPending}
           >
-            {triageIncident.isPending ? "Triaging..." : "Auto-Triage with AI"}
+            {triageIncident.isPending ? "Triaging…" : "Auto-Triage with AI"}
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitDisabled}>
-            {isSubmitting ? "Submitting..." : "Submit Incident"}
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting ? "Submitting…" : "Submit Incident"}
           </Button>
         </DialogFooter>
       </DialogContent>

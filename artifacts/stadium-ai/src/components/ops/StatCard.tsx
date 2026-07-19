@@ -15,9 +15,13 @@ interface StatCardProps {
 
 /**
  * Single stat display card used in the Ops Dashboard stats row.
- * Accepts separate color props for label/icon and value so the
- * "Critical Capacity" card can warn on the number alone without
- * recoloring its label.
+ *
+ * A11y notes:
+ * - The icon is purely decorative; aria-hidden removes it from the a11y tree.
+ * - The value `div` carries a full aria-label so screen readers announce
+ *   "Critical Incidents: 3" rather than just the raw number "3".
+ *   This is especially important when colour conveys status (red = danger).
+ * - While loading, aria-label reads "Critical Incidents: loading" instead of "—".
  */
 export function StatCard({
   label,
@@ -26,6 +30,8 @@ export function StatCard({
   labelColorClass = "text-muted-foreground",
   valueColorClass,
 }: StatCardProps) {
+  const isLoading = value === undefined;
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -36,11 +42,21 @@ export function StatCard({
           )}>
             {label}
           </span>
-          <Icon className={cn("h-4 w-4", labelColorClass)} />
+          {/* Decorative icon — hidden from the accessibility tree */}
+          <Icon className={cn("h-4 w-4", labelColorClass)} aria-hidden="true" />
         </div>
 
-        <div className={cn("text-3xl font-bold font-mono", valueColorClass)}>
-          {/* Render an em-dash when data is still loading */}
+        {/*
+         * aria-label conveys both the metric name AND its value in a single
+         * announcement — so a screen reader reading the stats row says
+         * "Active Venues: 12", "Critical Incidents: 3", not just "12", "3".
+         * Without this, the colored numbers are meaningless out of context.
+         */}
+        <div
+          className={cn("text-3xl font-bold font-mono", valueColorClass)}
+          aria-label={isLoading ? `${label}: loading` : `${label}: ${value}`}
+          aria-busy={isLoading}
+        >
           {value ?? "—"}
         </div>
       </CardContent>

@@ -26,7 +26,7 @@ interface IncidentFeedProps {
 
 function EmptyState() {
   return (
-    <div className="p-8 text-center text-muted-foreground">
+    <div className="p-8 text-center text-muted-foreground" role="status">
       No active incidents.
     </div>
   );
@@ -45,9 +45,15 @@ function IncidentRow({ incident, onResolve }: IncidentRowProps) {
       </td>
 
       <td className="px-6 py-4 whitespace-nowrap">
+        {/*
+         * The Badge communicates priority via colour alone (red, amber, etc.).
+         * aria-label makes this explicit for screen readers and colour-blind users:
+         * announces "Priority: critical" instead of just "critical".
+         */}
         <Badge
           variant="outline"
           className={cn("uppercase text-[10px]", getPriorityColor(incident.priority))}
+          aria-label={`Priority: ${incident.priority}`}
         >
           {incident.priority}
         </Badge>
@@ -65,10 +71,16 @@ function IncidentRow({ incident, onResolve }: IncidentRowProps) {
       </td>
 
       <td className="px-6 py-4 whitespace-nowrap text-right">
+        {/*
+         * Without aria-label, a screen reader tabbing through a full incident
+         * table hears "Resolve, Resolve, Resolve…" — no context which incident.
+         * aria-label provides: "Resolve incident: Gate 4 Crowd Surge".
+         */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => onResolve(incident.id)}
+          aria-label={`Resolve incident: ${incident.title}`}
         >
           Resolve
         </Button>
@@ -91,21 +103,37 @@ export function IncidentFeed({ incidents, onResolve }: IncidentFeedProps) {
     <Card className="lg:col-span-2 flex flex-col min-h-[500px]">
       <CardHeader className="border-b pb-4">
         <CardTitle className="flex items-center gap-2">
-          <ShieldAlert className="h-5 w-5" />
+          <ShieldAlert className="h-5 w-5" aria-hidden="true" />
           Live Incident Feed
         </CardTitle>
       </CardHeader>
 
       <ScrollArea className="flex-1">
         {hasActiveIncidents ? (
-          <table className="w-full text-sm text-left">
+          /*
+           * <caption className="sr-only"> gives the table a programmatic name
+           * announced by screen readers when they enter the table:
+           * "Active incidents requiring attention — N incidents listed."
+           * Without it, the table has no accessible description.
+           *
+           * scope="col" on <th> elements explicitly maps each header to its column,
+           * which assistive technologies use to read "Status: open, Priority: critical…"
+           * as users navigate cell by cell.
+           */
+          <table className="w-full text-sm text-left" aria-label="Live incident feed">
+            <caption className="sr-only">
+              Active incidents requiring attention.{" "}
+              {incidents.length === 1
+                ? "1 incident listed."
+                : `${incidents.length} incidents listed.`}
+            </caption>
             <thead className="bg-secondary/50 text-muted-foreground font-mono text-xs uppercase sticky top-0 backdrop-blur">
               <tr>
-                <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium">Priority</th>
-                <th className="px-6 py-3 font-medium">Incident</th>
-                <th className="px-6 py-3 font-medium">Location</th>
-                <th className="px-6 py-3 font-medium text-right">Action</th>
+                <th scope="col" className="px-6 py-3 font-medium">Status</th>
+                <th scope="col" className="px-6 py-3 font-medium">Priority</th>
+                <th scope="col" className="px-6 py-3 font-medium">Incident</th>
+                <th scope="col" className="px-6 py-3 font-medium">Location</th>
+                <th scope="col" className="px-6 py-3 font-medium text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y">
