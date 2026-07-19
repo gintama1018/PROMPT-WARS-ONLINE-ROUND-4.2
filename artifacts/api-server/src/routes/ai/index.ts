@@ -23,17 +23,22 @@ import { crowdDensityToRiskLevel, getCrowdRecommendations } from "../../lib/crow
 
 const router: IRouter = Router();
 
-/** 50 AI requests per IP per 15-minute window */
+/**
+ * 50 AI requests per IP per 15-minute window.
+ *
+ * `req.ip` is safe here because `app.set("trust proxy", 1)` is configured in
+ * app.ts, which means Express correctly resolves the real client IP from the
+ * X-Forwarded-For header rather than the proxy's IP.  The previous hand-rolled
+ * keyGenerator that parsed x-forwarded-for directly was bypassable — an
+ * attacker could cycle IPs by rotating the header value themselves.
+ */
 const aiRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 50,
   message: { error: "Too many AI requests. Please try again in a few minutes." },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) =>
-    (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ??
-    req.ip ??
-    "unknown",
+  // req.ip is now the real client IP thanks to trust proxy — no manual header parsing needed
 });
 
 /** POST /api/ai/ask — general AI assistant for any module */

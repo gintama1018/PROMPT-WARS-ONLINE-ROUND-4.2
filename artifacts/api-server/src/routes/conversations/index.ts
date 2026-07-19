@@ -137,12 +137,18 @@ router.post("/conversations/:id/messages", async (req, res): Promise<void> => {
     .values({ conversationId, role: "user", content: bodyParsed.data.content })
     .returning();
 
-  // Load conversation history for context
+  /**
+   * Load the most recent 50 messages for context.
+   * Without a LIMIT, a long conversation would send unbounded turns to Gemini,
+   * causing context-window overflow, quota exhaustion, and potential OOM.
+   * 50 turns (~25 back-and-forth exchanges) is sufficient for coherent context.
+   */
   const history = await db
     .select()
     .from(messagesTable)
     .where(eq(messagesTable.conversationId, conversationId))
-    .orderBy(messagesTable.createdAt);
+    .orderBy(messagesTable.createdAt)
+    .limit(50);
 
   const systemInstruction = buildModuleSystemInstruction(conversation.module);
 

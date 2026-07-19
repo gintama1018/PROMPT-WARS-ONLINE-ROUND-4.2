@@ -444,12 +444,16 @@ components:
       properties:
         module:
           type: string
+          maxLength: 50
         query:
           type: string
+          maxLength: 2000     # Prevents prompt-stuffing attacks on the fan chat endpoint
         context:
           type: ["string", "null"]
+          maxLength: 5000     # Conversation context passed to AI; capped to limit token injection
         language:
           type: ["string", "null"]
+          maxLength: 50
       required:
         - module
         - query
@@ -474,10 +478,13 @@ components:
       properties:
         description:
           type: string
+          maxLength: 2000     # Long enough for any real incident; caps AI token cost
         location:
           type: string
+          maxLength: 500
         reportedBy:
           type: ["string", "null"]
+          maxLength: 200
       required:
         - description
         - location
@@ -506,12 +513,17 @@ components:
       properties:
         venue:
           type: string
+          maxLength: 200
         zone:
           type: string
+          maxLength: 200
         density:
           type: number
+          minimum: 0
+          maximum: 100        # Crowd density is a percentage — reject out-of-range values at the schema level
         matchPhase:
           type: ["string", "null"]
+          maxLength: 100
       required:
         - venue
         - zone
@@ -537,10 +549,13 @@ components:
       properties:
         text:
           type: string
+          maxLength: 5000     # Translation endpoint is highest-cost; cap prevents large-payload abuse
         targetLanguage:
           type: string
+          maxLength: 50
         sourceLanguage:
           type: ["string", "null"]
+          maxLength: 50
       required:
         - text
         - targetLanguage
@@ -595,14 +610,19 @@ components:
       properties:
         title:
           type: string
+          maxLength: 200
         description:
           type: string
+          maxLength: 2000
         location:
           type: string
+          maxLength: 500
         priority:
           type: string
+          maxLength: 20
         module:
           type: string
+          maxLength: 50
       required:
         - title
         - description
@@ -615,14 +635,19 @@ components:
       properties:
         title:
           type: ["string", "null"]
+          maxLength: 200
         description:
           type: ["string", "null"]
+          maxLength: 2000
         location:
           type: ["string", "null"]
+          maxLength: 500
         priority:
           type: ["string", "null"]
+          maxLength: 20
         status:
           type: ["string", "null"]
+          maxLength: 20
 
     # Venue Schemas
     Venue:
@@ -712,8 +737,10 @@ components:
       properties:
         title:
           type: string
+          maxLength: 200
         module:
           type: string
+          maxLength: 50
       required:
         - title
         - module
@@ -767,5 +794,6 @@ components:
       properties:
         content:
           type: string
+          maxLength: 5000     # Single chat message; matches the context field cap
       required:
         - content

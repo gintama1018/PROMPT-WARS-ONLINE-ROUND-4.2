@@ -14,11 +14,19 @@ export interface ApiError {
 }
 
 export interface AiQuery {
+  /** @maxLength 50 */
   module: string;
+  /** @maxLength 2000 */
   query: string;
-  /** @nullable */
+  /**
+     * @maxLength 5000
+     * @nullable
+     */
   context?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 50
+     * @nullable
+     */
   language?: string | null;
 }
 
@@ -29,9 +37,14 @@ export interface AiResponse {
 }
 
 export interface IncidentTriageInput {
+  /** @maxLength 2000 */
   description: string;
+  /** @maxLength 500 */
   location: string;
-  /** @nullable */
+  /**
+     * @maxLength 200
+     * @nullable
+     */
   reportedBy?: string | null;
 }
 
@@ -43,10 +56,19 @@ export interface IncidentTriageResult {
 }
 
 export interface CrowdInput {
+  /** @maxLength 200 */
   venue: string;
+  /** @maxLength 200 */
   zone: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
   density: number;
-  /** @nullable */
+  /**
+     * @maxLength 100
+     * @nullable
+     */
   matchPhase?: string | null;
 }
 
@@ -58,9 +80,14 @@ export interface CrowdAnalysis {
 }
 
 export interface TranslationInput {
+  /** @maxLength 5000 */
   text: string;
+  /** @maxLength 50 */
   targetLanguage: string;
-  /** @nullable */
+  /**
+     * @maxLength 50
+     * @nullable
+     */
   sourceLanguage?: string | null;
 }
 
@@ -83,23 +110,43 @@ export interface Incident {
 }
 
 export interface IncidentInput {
+  /** @maxLength 200 */
   title: string;
+  /** @maxLength 2000 */
   description: string;
+  /** @maxLength 500 */
   location: string;
+  /** @maxLength 20 */
   priority: string;
+  /** @maxLength 50 */
   module: string;
 }
 
 export interface IncidentUpdate {
-  /** @nullable */
+  /**
+     * @maxLength 200
+     * @nullable
+     */
   title?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
   description?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 500
+     * @nullable
+     */
   location?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 20
+     * @nullable
+     */
   priority?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 20
+     * @nullable
+     */
   status?: string | null;
 }
 
@@ -134,7 +181,9 @@ export interface Conversation {
 }
 
 export interface ConversationInput {
+  /** @maxLength 200 */
   title: string;
+  /** @maxLength 50 */
   module: string;
 }
 
@@ -155,6 +204,7 @@ export interface ConversationWithMessages {
 }
 
 export interface MessageInput {
+  /** @maxLength 5000 */
   content: string;
 }
 

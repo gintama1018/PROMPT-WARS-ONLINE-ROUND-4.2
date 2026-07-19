@@ -7,10 +7,18 @@
  */
 
 export interface AiQuery {
+  /** @maxLength 50 */
   module: string;
+  /** @maxLength 2000 */
   query: string;
-  /** @nullable */
+  /**
+     * @maxLength 5000
+     * @nullable
+     */
   context?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 50
+     * @nullable
+     */
   language?: string | null;
 }

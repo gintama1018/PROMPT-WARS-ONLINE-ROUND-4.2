@@ -7,9 +7,18 @@
  */
 
 export interface CrowdInput {
+  /** @maxLength 200 */
   venue: string;
+  /** @maxLength 200 */
   zone: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
   density: number;
-  /** @nullable */
+  /**
+     * @maxLength 100
+     * @nullable
+     */
   matchPhase?: string | null;
 }

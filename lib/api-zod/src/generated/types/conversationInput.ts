@@ -7,6 +7,8 @@
  */
 
 export interface ConversationInput {
+  /** @maxLength 200 */
   title: string;
+  /** @maxLength 50 */
   module: string;
 }

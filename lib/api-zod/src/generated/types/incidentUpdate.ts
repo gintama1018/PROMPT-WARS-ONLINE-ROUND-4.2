@@ -7,14 +7,29 @@
  */
 
 export interface IncidentUpdate {
-  /** @nullable */
+  /**
+     * @maxLength 200
+     * @nullable
+     */
   title?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
   description?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 500
+     * @nullable
+     */
   location?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 20
+     * @nullable
+     */
   priority?: string | null;
-  /** @nullable */
+  /**
+     * @maxLength 20
+     * @nullable
+     */
   status?: string | null;
 }

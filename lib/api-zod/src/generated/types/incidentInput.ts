@@ -7,9 +7,14 @@
  */
 
 export interface IncidentInput {
+  /** @maxLength 200 */
   title: string;
+  /** @maxLength 2000 */
   description: string;
+  /** @maxLength 500 */
   location: string;
+  /** @maxLength 20 */
   priority: string;
+  /** @maxLength 50 */
   module: string;
 }

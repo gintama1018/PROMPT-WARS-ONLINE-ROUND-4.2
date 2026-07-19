@@ -7,8 +7,13 @@
  */
 
 export interface IncidentTriageInput {
+  /** @maxLength 2000 */
   description: string;
+  /** @maxLength 500 */
   location: string;
-  /** @nullable */
+  /**
+     * @maxLength 200
+     * @nullable
+     */
   reportedBy?: string | null;
 }

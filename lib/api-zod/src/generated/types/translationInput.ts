@@ -7,8 +7,13 @@
  */
 
 export interface TranslationInput {
+  /** @maxLength 5000 */
   text: string;
+  /** @maxLength 50 */
   targetLanguage: string;
-  /** @nullable */
+  /**
+     * @maxLength 50
+     * @nullable
+     */
   sourceLanguage?: string | null;
 }

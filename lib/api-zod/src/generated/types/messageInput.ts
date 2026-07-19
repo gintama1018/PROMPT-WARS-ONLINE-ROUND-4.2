@@ -7,5 +7,6 @@
  */
 
 export interface MessageInput {
+  /** @maxLength 5000 */
   content: string;
 }

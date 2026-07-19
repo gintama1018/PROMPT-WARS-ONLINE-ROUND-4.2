@@ -19,11 +19,21 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Ask an AI module a question
  */
+export const askAIBodyModuleMax = 50;
+
+export const askAIBodyQueryMax = 2000;
+
+export const askAIBodyContextMax = 5000;
+
+export const askAIBodyLanguageMax = 50;
+
+
+
 export const AskAIBody = zod.object({
-  "module": zod.string(),
-  "query": zod.string(),
-  "context": zod.string().nullish(),
-  "language": zod.string().nullish()
+  "module": zod.string().max(askAIBodyModuleMax),
+  "query": zod.string().max(askAIBodyQueryMax),
+  "context": zod.string().max(askAIBodyContextMax).nullish(),
+  "language": zod.string().max(askAIBodyLanguageMax).nullish()
 })
 
 export const AskAIResponse = zod.object({
@@ -36,10 +46,18 @@ export const AskAIResponse = zod.object({
 /**
  * @summary AI-powered incident triage and classification
  */
+export const triageIncidentBodyDescriptionMax = 2000;
+
+export const triageIncidentBodyLocationMax = 500;
+
+export const triageIncidentBodyReportedByMax = 200;
+
+
+
 export const TriageIncidentBody = zod.object({
-  "description": zod.string(),
-  "location": zod.string(),
-  "reportedBy": zod.string().nullish()
+  "description": zod.string().max(triageIncidentBodyDescriptionMax),
+  "location": zod.string().max(triageIncidentBodyLocationMax),
+  "reportedBy": zod.string().max(triageIncidentBodyReportedByMax).nullish()
 })
 
 export const TriageIncidentResponse = zod.object({
@@ -53,11 +71,22 @@ export const TriageIncidentResponse = zod.object({
 /**
  * @summary AI crowd density analysis and recommendations
  */
+export const analyzeCrowdBodyVenueMax = 200;
+
+export const analyzeCrowdBodyZoneMax = 200;
+
+export const analyzeCrowdBodyDensityMin = 0;
+export const analyzeCrowdBodyDensityMax = 100;
+
+export const analyzeCrowdBodyMatchPhaseMax = 100;
+
+
+
 export const AnalyzeCrowdBody = zod.object({
-  "venue": zod.string(),
-  "zone": zod.string(),
-  "density": zod.number(),
-  "matchPhase": zod.string().nullish()
+  "venue": zod.string().max(analyzeCrowdBodyVenueMax),
+  "zone": zod.string().max(analyzeCrowdBodyZoneMax),
+  "density": zod.number().min(analyzeCrowdBodyDensityMin).max(analyzeCrowdBodyDensityMax),
+  "matchPhase": zod.string().max(analyzeCrowdBodyMatchPhaseMax).nullish()
 })
 
 export const AnalyzeCrowdResponse = zod.object({
@@ -70,10 +99,18 @@ export const AnalyzeCrowdResponse = zod.object({
 /**
  * @summary Multilingual AI translation
  */
+export const translateTextBodyTextMax = 5000;
+
+export const translateTextBodyTargetLanguageMax = 50;
+
+export const translateTextBodySourceLanguageMax = 50;
+
+
+
 export const TranslateTextBody = zod.object({
-  "text": zod.string(),
-  "targetLanguage": zod.string(),
-  "sourceLanguage": zod.string().nullish()
+  "text": zod.string().max(translateTextBodyTextMax),
+  "targetLanguage": zod.string().max(translateTextBodyTargetLanguageMax),
+  "sourceLanguage": zod.string().max(translateTextBodySourceLanguageMax).nullish()
 })
 
 export const TranslateTextResponse = zod.object({
@@ -108,12 +145,24 @@ export const ListIncidentsResponse = zod.array(ListIncidentsResponseItem)
 /**
  * @summary Create a new incident
  */
+export const createIncidentBodyTitleMax = 200;
+
+export const createIncidentBodyDescriptionMax = 2000;
+
+export const createIncidentBodyLocationMax = 500;
+
+export const createIncidentBodyPriorityMax = 20;
+
+export const createIncidentBodyModuleMax = 50;
+
+
+
 export const CreateIncidentBody = zod.object({
-  "title": zod.string(),
-  "description": zod.string(),
-  "location": zod.string(),
-  "priority": zod.string(),
-  "module": zod.string()
+  "title": zod.string().max(createIncidentBodyTitleMax),
+  "description": zod.string().max(createIncidentBodyDescriptionMax),
+  "location": zod.string().max(createIncidentBodyLocationMax),
+  "priority": zod.string().max(createIncidentBodyPriorityMax),
+  "module": zod.string().max(createIncidentBodyModuleMax)
 })
 
 export const CreateIncidentResponse = zod.object({
@@ -136,12 +185,24 @@ export const UpdateIncidentParams = zod.object({
   "id": zod.coerce.number()
 })
 
+export const updateIncidentBodyTitleMax = 200;
+
+export const updateIncidentBodyDescriptionMax = 2000;
+
+export const updateIncidentBodyLocationMax = 500;
+
+export const updateIncidentBodyPriorityMax = 20;
+
+export const updateIncidentBodyStatusMax = 20;
+
+
+
 export const UpdateIncidentBody = zod.object({
-  "title": zod.string().nullish(),
-  "description": zod.string().nullish(),
-  "location": zod.string().nullish(),
-  "priority": zod.string().nullish(),
-  "status": zod.string().nullish()
+  "title": zod.string().max(updateIncidentBodyTitleMax).nullish(),
+  "description": zod.string().max(updateIncidentBodyDescriptionMax).nullish(),
+  "location": zod.string().max(updateIncidentBodyLocationMax).nullish(),
+  "priority": zod.string().max(updateIncidentBodyPriorityMax).nullish(),
+  "status": zod.string().max(updateIncidentBodyStatusMax).nullish()
 })
 
 export const UpdateIncidentResponse = zod.object({
@@ -234,9 +295,15 @@ export const ListConversationsResponse = zod.array(ListConversationsResponseItem
 /**
  * @summary Create a new AI conversation
  */
+export const createConversationBodyTitleMax = 200;
+
+export const createConversationBodyModuleMax = 50;
+
+
+
 export const CreateConversationBody = zod.object({
-  "title": zod.string(),
-  "module": zod.string()
+  "title": zod.string().max(createConversationBodyTitleMax),
+  "module": zod.string().max(createConversationBodyModuleMax)
 })
 
 export const CreateConversationResponse = zod.object({
@@ -303,8 +370,12 @@ export const SendMessageParams = zod.object({
   "id": zod.coerce.number()
 })
 
+export const sendMessageBodyContentMax = 5000;
+
+
+
 export const SendMessageBody = zod.object({
-  "content": zod.string()
+  "content": zod.string().max(sendMessageBodyContentMax)
 })
 
 export const SendMessageResponse = zod.object({
