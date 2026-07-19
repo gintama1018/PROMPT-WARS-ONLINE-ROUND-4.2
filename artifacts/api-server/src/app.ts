@@ -15,7 +15,7 @@ app.set("trust proxy", 1);
 // ─── Security Headers ─────────────────────────────────────────────────────────
 // helmet sets X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security,
 // Referrer-Policy, X-DNS-Prefetch-Control, and more in one call.
-app.use(helmet());
+app.use((helmet as any)());
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 // Restrict to the known frontend origin. Falls back to the dev domain env var.
@@ -43,13 +43,13 @@ app.use(
 
 // ─── Request Logging ──────────────────────────────────────────────────────────
 app.use(
-  pinoHttp({
+  (pinoHttp as any)({
     logger,
     serializers: {
-      req(req) {
+      req(req: any) {
         return { id: req.id, method: req.method, url: req.url?.split("?")[0] };
       },
-      res(res) {
+      res(res: any) {
         return { statusCode: res.statusCode };
       },
     },
